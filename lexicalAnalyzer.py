@@ -11,6 +11,7 @@ class LexicalAnalyzer:
         self.__characters = []
         self.__header = 0
         self.__lexeme = ''
+        
 
 
     def readFiles(self):
