@@ -6,8 +6,8 @@ class LexicalAnalyzer:
         self.__tokens_table = []
         self.__input_files_name = []
         self.__line_counter = 1
-        self.__special_characters = ['+', '-', '*', '/', '!', '=', '<', '>', '&', '|', ';', ',', '.', '(', ')', '[', ']', '{', '}','"']
-        self.__ascii_symbols = ['#', '$', '%', "'", ':', '?', '@', '^', '`', '~']
+        self.__special_characters = ['+', '-', '*', '/', '!', '=', '<', '>', '&', '|', ';', ',', '.', '(', ')', '[', ']', '{', '}','"',' ']
+        self.__ascii_symbols = ['#', '$', '%', "'", ':', '?', '@', '^', '`', '~',"_", '\\']
         self.__characters = []
         self.__header = 0
         self.__lexeme = ''
