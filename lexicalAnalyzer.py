@@ -45,8 +45,11 @@ class LexicalAnalyzer:
             self.getText(filename)
             self.q0()
             print(filename)
-            for element in self.__tokens_table:
-                print(element)
+            with open(self.__inputdir+filename[:-4]+"-saída.txt", 'w') as file_writer:
+                for element in self.__tokens_table:
+                    file_writer.write(element)
+                    file_writer.write('\n')
+                file_writer.close()
             self.__header = 0
             self.__line_counter = 1
             self.__tokens_table = []
@@ -149,7 +152,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -162,7 +165,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -172,13 +175,13 @@ class LexicalAnalyzer:
         
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1 
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -189,13 +192,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == 'a':
             self.q5()
-        if verify == 'e':
+        elif verify == 'e':
             self.q26()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -208,7 +211,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -221,7 +224,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -230,13 +233,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1    
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -253,7 +256,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -266,7 +269,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -279,7 +282,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -292,7 +295,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -305,7 +308,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -318,7 +321,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -331,7 +334,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -344,7 +347,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -353,13 +356,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -376,7 +379,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -389,7 +392,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -402,7 +405,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -415,7 +418,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -424,13 +427,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -445,7 +448,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -458,7 +461,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -471,7 +474,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -480,13 +483,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -501,7 +504,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -514,7 +517,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -527,7 +530,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -540,7 +543,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -553,7 +556,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -562,13 +565,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -583,7 +586,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -596,7 +599,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -609,7 +612,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -622,7 +625,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -635,7 +638,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -648,7 +651,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -657,13 +660,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -678,7 +681,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -687,13 +690,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == 't':
             self.q41()
-        if verify == 'a':
+        elif verify == 'a':
             self.q57()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -706,7 +709,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -719,7 +722,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -732,7 +735,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -741,13 +744,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -758,13 +761,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -779,7 +782,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -792,7 +795,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -805,7 +808,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -814,13 +817,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -837,7 +840,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -850,7 +853,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -863,7 +866,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -872,13 +875,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -895,7 +898,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -908,7 +911,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -917,13 +920,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -940,7 +943,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -949,13 +952,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -970,7 +973,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -983,7 +986,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -996,7 +999,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1009,7 +1012,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1018,13 +1021,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1039,7 +1042,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1052,7 +1055,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1061,13 +1064,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1078,13 +1081,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1099,7 +1102,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1112,7 +1115,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1125,7 +1128,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1138,7 +1141,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1151,7 +1154,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1164,7 +1167,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1173,13 +1176,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1194,7 +1197,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1207,7 +1210,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1220,7 +1223,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1233,7 +1236,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1246,7 +1249,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1255,13 +1258,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1276,7 +1279,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1289,7 +1292,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1298,13 +1301,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1319,7 +1322,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1332,7 +1335,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1345,7 +1348,7 @@ class LexicalAnalyzer:
             self.q116()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1354,13 +1357,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<PRE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isalpha() or verify.isdecimal() or verify == '_':
@@ -1371,7 +1374,7 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -1379,12 +1382,12 @@ class LexicalAnalyzer:
             self.q92()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -1393,7 +1396,7 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -1403,12 +1406,12 @@ class LexicalAnalyzer:
             self.q115()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1417,18 +1420,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1437,18 +1440,22 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        elif verify == '/':
+            self.q120()
+        elif verify == '*':
+            self.q121()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1457,18 +1464,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1477,18 +1484,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<ART, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1497,7 +1504,7 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -1505,12 +1512,12 @@ class LexicalAnalyzer:
             self.q99()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1531,18 +1538,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -1551,18 +1558,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<LOG, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1571,18 +1578,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1591,7 +1598,7 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -1599,12 +1606,12 @@ class LexicalAnalyzer:
             self.q103()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1613,7 +1620,7 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -1621,12 +1628,12 @@ class LexicalAnalyzer:
             self.q104()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1635,7 +1642,7 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -1643,12 +1650,12 @@ class LexicalAnalyzer:
             self.q105()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1657,18 +1664,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1677,18 +1684,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1697,18 +1704,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1717,18 +1724,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1737,18 +1744,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1757,18 +1764,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1777,18 +1784,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1797,18 +1804,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1817,18 +1824,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1837,18 +1844,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1857,18 +1864,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1877,18 +1884,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1897,18 +1904,18 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<DEL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         elif verify.isdecimal() or verify.isalpha():
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
 
@@ -1919,13 +1926,13 @@ class LexicalAnalyzer:
             self.q116()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<IDE, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1936,13 +1943,13 @@ class LexicalAnalyzer:
             self.q118()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<NRO, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<NRO, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1953,13 +1960,13 @@ class LexicalAnalyzer:
             self.q118()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<NRO, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<NRO, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
     
@@ -1968,11 +1975,42 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify == '"':
             self.__lexeme = self.__lexeme[1:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ":" + "<CAC, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<CAC, " + self.__lexeme + ">")
             self.q0()        
         elif verify.isdecimal() or verify.isalpha() or verify in self.__ascii_symbols or verify in self.__special_characters or verify == " ":
             self.q119()
 
+    def q120(self): #Comentário de Linha
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify != '\n':
+            self.q120() 
+        else:
+            self.__line_counter +=1
+            self.q0()
+    
+    def q121(self): #Comentário de bloco
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify == '*':
+            self.q122() 
+        elif verify == '\n':
+            self.__line_counter +=1
+            self.q121()
+        else:
+            self.q121()
+
+    def q122(self): #Comentário de bloco
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify == '/':
+            self.q0()
+        elif verify == '\n':
+            self.__line_counter += 1
+            self.q121()
+        else:
+            self.__line_counter += 1
+            self.q121()
 
 
-
+LexicalAnalyzer().startTokenizer()
