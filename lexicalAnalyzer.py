@@ -11,7 +11,7 @@ class LexicalAnalyzer:
         self.__characters = []
         self.__header = 0
         self.__lexeme = ''
-        
+
 
 
     def readFiles(self):
@@ -1972,6 +1972,7 @@ class LexicalAnalyzer:
             self.q0()        
         elif verify.isdecimal() or verify.isalpha() or verify in self.__ascii_symbols or verify in self.__special_characters or verify == " ":
             self.q119()
-LexicalAnalyzer().startTokenizer()
+
+
 
 
