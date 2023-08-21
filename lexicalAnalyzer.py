@@ -4,6 +4,7 @@ class LexicalAnalyzer:
     def __init__(self) -> None:
         self.__inputdir = "./Files/"
         self.__tokens_table = []
+        self.__errors_table = []
         self.__input_files_name = []
         self.__line_counter = 1
         self.__special_characters = ['+', '-', '*', '/', '!', '=', '<', '>', '&', '|', ';', ',', '.', '(', ')', '[', ']', '{', '}','"',' ']
@@ -49,10 +50,17 @@ class LexicalAnalyzer:
                 for element in self.__tokens_table:
                     file_writer.write(element)
                     file_writer.write('\n')
+                if(len(self.__errors_table)>0):
+                        file_writer.write('\n')
+                        file_writer.write('-----------------TABELA DE ERROS-----------------\n')
+                        for element in self.__errors_table:
+                            file_writer.write('\n')
+                            file_writer.write(element)
                 file_writer.close()
             self.__header = 0
             self.__line_counter = 1
             self.__tokens_table = []
+            self.__errors_table = []
     
 
 
@@ -122,7 +130,7 @@ class LexicalAnalyzer:
             self.q113()
         elif verify == '}':
             self.q114()
-        elif verify.isalpha():
+        elif (verify.isalpha() and verify>='A' and verify<='z') and verify>='A' and verify<='z':
             self.q116()
         elif verify.isdecimal():
             self.q117()
@@ -138,8 +146,10 @@ class LexicalAnalyzer:
                 if verify == '\n':
                     self.__line_counter += 1
                 self.q0()
-        else:
+        elif verify == ' ' or verify == '\t':
             self.q0()
+        else:
+            self.q126()
 
     def q1(self):
         verify = self.getCharacter()
@@ -148,26 +158,80 @@ class LexicalAnalyzer:
             self.q2()
         elif verify == 'f':
             self.q45()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.q124()
 
     def q2(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 't':
             self.q3()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.q124()
     
     def q3(self): #PRE int
         verify = self.getCharacter()
@@ -179,13 +243,36 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1 
             self.q0()
+        
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q4(self):
         verify = self.getCharacter()
@@ -194,39 +281,117 @@ class LexicalAnalyzer:
             self.q5()
         elif verify == 'e':
             self.q26()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.q124()
     
     def q5(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'i':
             self.q6()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q6(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q7()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q7(self): #PRE main
         verify = self.getCharacter()
@@ -237,13 +402,35 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1    
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q8(self):
         verify = self.getCharacter()
@@ -252,104 +439,312 @@ class LexicalAnalyzer:
             self.q9()
         elif verify == 'o':
             self.q64()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q9(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'r':
             self.q10()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q10(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'i':
             self.q11()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q11(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'a':
             self.q12()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q12(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'b':
             self.q13()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q13(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'l':
             self.q14()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q14(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q15()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q15(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q16()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
 
     def q16(self): #PRE variables
         verify = self.getCharacter()
@@ -360,13 +755,39 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q17(self):
         verify = self.getCharacter()
@@ -375,52 +796,156 @@ class LexicalAnalyzer:
             self.q18()
         elif verify == 'l':
             self.q22()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q18(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q19()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q19(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q20()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q20(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 't':
             self.q21()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q21(self): #PRE const
         verify = self.getCharacter()
@@ -431,52 +956,152 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
 
     def q22(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'a':
             self.q23()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
 
     def q23(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q24()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q24(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q25()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q25(self): #PRE class
         verify = self.getCharacter()
@@ -487,78 +1112,231 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
+        
     
     def q26(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 't':
             self.q27()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q27(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'h':
             self.q28()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q28(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'o':
             self.q29()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q29(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'd':
             self.q30()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
 
     def q30(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q31()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q31(self): #PRE methods
         verify = self.getCharacter()
@@ -569,91 +1347,269 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q32(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'b':
             self.q33()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.q124()
 
     def q33(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'j':
             self.q34()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q34(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q35()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q35(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'c':
             self.q36()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q36(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 't':
             self.q37()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q37(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q38()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q38(self): #PRE objects
         verify = self.getCharacter()
@@ -664,27 +1620,75 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q39(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q40()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-    
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
+
     def q40(self):
         verify = self.getCharacter()
         self.__lexeme += verify
@@ -692,52 +1696,156 @@ class LexicalAnalyzer:
             self.q41()
         elif verify == 'a':
             self.q57()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q41(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'u':
             self.q42()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q42(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'r':
             self.q43()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q43(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q44()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q44(self): #PRE return
         verify = self.getCharacter()
@@ -748,13 +1856,35 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q45(self): #PRE if
         verify = self.getCharacter()
@@ -765,52 +1895,152 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
 
     def q46(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'l':
             self.q47()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q47(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q48()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q48(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q49()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q49(self): #PRE else
         verify = self.getCharacter()
@@ -821,13 +2051,35 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
 
     def q50(self):
         verify = self.getCharacter()
@@ -836,56 +2088,156 @@ class LexicalAnalyzer:
             self.q51()
         elif verify == 'r':
             self.q81()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
 
     def q51(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q52()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q52(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q53()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-    
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()    
+
     def q53(self): #PRE then
         verify = self.getCharacter()
         self.__lexeme += verify
-        if verify == ' ' or '\n':
+        if verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q54(self):
         verify = self.getCharacter()
@@ -894,26 +2246,78 @@ class LexicalAnalyzer:
             self.q55()
         elif verify == 'a':
             self.q84()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q55(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'r':
             self.q56()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q56(self): #PRE for
         verify = self.getCharacter()
@@ -924,13 +2328,35 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q57(self):
         verify = self.getCharacter()
@@ -939,14 +2365,40 @@ class LexicalAnalyzer:
             self.q58()
         elif verify == 'l':
             self.q67()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-    
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
+
     def q58(self): #PRE read
         verify = self.getCharacter()
         self.__lexeme += verify
@@ -956,65 +2408,191 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q59(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'r':
             self.q60()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q60(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'i':
             self.q61()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q61(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q62()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q62(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 't':
             self.q63()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q63(self): #PRE print 
         verify = self.getCharacter()
@@ -1025,39 +2603,113 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q64(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'i':
             self.q65()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q65(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'd':
             self.q66()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q66(self): #PRE void
         verify = self.getCharacter()
@@ -1068,13 +2720,35 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q67(self): #PRE real
         verify = self.getCharacter()
@@ -1085,91 +2759,269 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q68(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'o':
             self.q69()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q69(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'o':
             self.q70()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q70(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'l':
             self.q71()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q71(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q72()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q72(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'a':
             self.q73()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q73(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q74()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q74(self): #PRE boolean
         verify = self.getCharacter()
@@ -1180,78 +3032,230 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q75(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 't':
             self.q76()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q76(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'r':
             self.q77()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q77(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'i':
             self.q78()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q78(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'n':
             self.q79()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q79(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'g':
             self.q80()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q80(self): #PRE string
         verify = self.getCharacter()
@@ -1262,39 +3266,113 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q81(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'u':
             self.q82()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q82(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q83()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q83(self): #PRE true
         verify = self.getCharacter()
@@ -1305,52 +3383,152 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q84(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'l':
             self.q85()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-    
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
+
     def q85(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 's':
             self.q86()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q86(self):
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == 'e':
             self.q87()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        elif verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q124()
     
     def q87(self): #PRE false
         verify = self.getCharacter()
@@ -1361,13 +3539,35 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<PRE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isalpha() or verify.isdecimal() or verify == '_':
+        elif (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
+        else:
+            self.q124()
     
     def q88(self): #ART +
         verify = self.getCharacter()
@@ -1380,7 +3580,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify == '+':
             self.q92()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1404,7 +3604,7 @@ class LexicalAnalyzer:
             self.q93()
         elif verify == '>':
             self.q115()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1424,7 +3624,7 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1448,7 +3648,7 @@ class LexicalAnalyzer:
             self.q120()
         elif verify == '*':
             self.q121()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1473,7 +3673,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1493,7 +3693,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1515,7 +3715,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1547,7 +3747,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1567,7 +3767,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1587,7 +3787,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1609,7 +3809,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1631,7 +3831,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1653,7 +3853,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1673,7 +3873,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1693,7 +3893,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1713,7 +3913,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1733,7 +3933,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1753,7 +3953,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1773,7 +3973,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1793,7 +3993,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1813,7 +4013,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1833,7 +4033,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1853,7 +4053,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1873,7 +4073,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1893,7 +4093,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1913,7 +4113,7 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
-        elif verify.isdecimal() or verify.isalpha():
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
@@ -1922,7 +4122,7 @@ class LexicalAnalyzer:
     def q116(self): #IDE
         verify = self.getCharacter()
         self.__lexeme += verify
-        if verify.isalpha() or verify.isdecimal() or verify == '_':
+        if (verify.isalpha() and verify>='A' and verify<='z') or verify.isdecimal() or verify == '_':
             self.q116()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
@@ -1930,16 +4130,40 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<IDE, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.q124()
     
-    def q117(self):
+    def q117(self): #NRO int
         verify = self.getCharacter()
         self.__lexeme += verify
-        if verify.isdecimal() or verify == '.':
+        if verify.isdecimal():
+            self.q117()
+        elif verify == '.':
             self.q118()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
@@ -1947,28 +4171,76 @@ class LexicalAnalyzer:
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
         elif verify in self.__special_characters:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.q123()
     
-    def q118(self): #NRO
+    def q118(self): #NRO float
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify.isdecimal():
             self.q118()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
+        elif verify == '.':
+            self.q123()
+        elif verify == '/':
+            flag = self.getCharacter()
+            if flag == '*':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
         elif verify in self.__special_characters:
-            self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
-            self.__header = self.__header - 1
-            self.q0()
+            self.q123()
+        else:
+            self.q123()
     
     def q119(self): #CAC
         verify = self.getCharacter()
@@ -1977,8 +4249,16 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[1:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<CAC, " + self.__lexeme + ">")
             self.q0()        
-        elif verify.isdecimal() or verify.isalpha() or verify in self.__ascii_symbols or verify in self.__special_characters or verify == " ":
+        elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z') or verify in self.__ascii_symbols or verify in self.__special_characters or verify == " ":
             self.q119()
+        else:
+            if verify == '\n':
+                self.__line_counter += 1
+                self.__lexeme = self.__lexeme[1:-1]
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<CMF, " + self.__lexeme + ">")
+                self.q0()
+            else:
+                self.q125()
 
     def q120(self): #Comentário de Linha
         verify = self.getCharacter()
@@ -1996,7 +4276,11 @@ class LexicalAnalyzer:
             self.q122() 
         elif verify == '\n':
             self.__line_counter +=1
-            self.q121()
+            if self.__header > len(self.__characters):
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<CoMF,"+ ">")
+                self.q0()
+            else:
+                self.q121()
         else:
             self.q121()
 
@@ -2011,6 +4295,116 @@ class LexicalAnalyzer:
         else:
             self.__line_counter += 1
             self.q121()
+    
+    def q123(self): #NMF
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
+            if verify == '\n':
+                self.__line_counter += 1
+            self.q0()
+        elif verify == '/':
+            flag = self.getCharacter()
+            if flag == '*':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q123()
+        elif verify in self.__special_characters and verify != '.':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
+            self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.q123()
+
+    def q124(self): #IMF
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify == ' ' or verify == '\n':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<IMF, " + self.__lexeme + ">")
+            if verify == '\n':
+                self.__line_counter += 1
+            self.q0()
+        elif verify == '/':
+            flag = self.getCharacter()
+            if flag == '*':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<IMF, " + self.__lexeme + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '&':
+            flag = self.getCharacter()
+            if flag == '&':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<IMF, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify == '|':
+            flag = self.getCharacter()
+            if flag == '|':
+                self.__errors_table.append(str(self.__line_counter) + ": " + "<IMF, " + self.__lexeme[:-1] + ">")
+                self.__header = self.__header-2
+                self.q0()
+            else:
+                self.__header = self.__header-1
+                self.q124()
+        elif verify in self.__special_characters and verify != '.':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<IMF, " + self.__lexeme + ">")
+            self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.q124()
+
+    def q125(self): #CMF
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify == '"':
+            self.__lexeme = self.__lexeme[1:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<CMF, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q125()
+    
+    def q126(self): #TMF
+        verify = self.getCharacter()
+        self.__lexeme += verify
+        if verify == "\n" or verify == ' ':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<TMF, " + self.__lexeme + ">")
+            self.q0()
+        else:
+            self.q126()
+        
+    
 
 
 LexicalAnalyzer().startTokenizer()
