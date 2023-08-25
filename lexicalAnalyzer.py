@@ -109,8 +109,17 @@ class LexicalAnalyzer:
         elif verify == '>':
             self.q102()
         elif verify == '&':
-            self.q95()
+            flag = self.getCharacter()
+            self.__header = self.__header-1
+            if flag != '&':
+                self.q126()
+            else:
+                self.q95()
         elif verify == '|':
+            flag = self.getCharacter()
+            self.__header = self.__header-1
+            if flag != '|':
+                self.q126()
             self.q96()
         elif verify == ';':
             self.q106()
@@ -3634,6 +3643,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q91(self): #ART /
         verify = self.getCharacter()
@@ -4388,6 +4401,10 @@ class LexicalAnalyzer:
         verify = self.getCharacter()
         self.__lexeme += verify
         if verify == '"':
+            self.__lexeme = self.__lexeme[1:-1]
+            self.__errors_table.append(str(self.__line_counter) + ": " + "<CMF, " + self.__lexeme + ">")
+            self.q0()
+        elif verify == '\n':
             self.__lexeme = self.__lexeme[1:-1]
             self.__errors_table.append(str(self.__line_counter) + ": " + "<CMF, " + self.__lexeme + ">")
             self.q0()
