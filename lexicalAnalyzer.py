@@ -4405,6 +4405,7 @@ class LexicalAnalyzer:
             self.__errors_table.append(str(self.__line_counter) + ": " + "<CMF, " + self.__lexeme + ">")
             self.q0()
         elif verify == '\n':
+            self.__line_counter = self.__line_counter + 1
             self.__lexeme = self.__lexeme[1:-1]
             self.__errors_table.append(str(self.__line_counter) + ": " + "<CMF, " + self.__lexeme + ">")
             self.q0()
