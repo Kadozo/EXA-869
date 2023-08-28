@@ -1,4 +1,5 @@
 import os
+import platform
 
 class LexicalAnalyzer:
     def __init__(self) -> None:
@@ -3599,6 +3600,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme[:-1] + ">")
+            self.q0()
 
     def q89(self): #ART -
         verify = self.getCharacter()
@@ -3622,6 +3627,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q90(self): #ART *
@@ -3671,6 +3680,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q92(self): #ART ++
         verify = self.getCharacter()
@@ -3691,6 +3704,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q93(self): #ART --
         verify = self.getCharacter()
@@ -3710,6 +3727,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<ART, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q94(self): #LOG !
@@ -3732,6 +3753,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q95(self):
@@ -3765,6 +3790,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme[:-1] + ">")
+            self.q0()
 
     def q98(self): #LOG ||
         verify = self.getCharacter()
@@ -3785,6 +3814,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<LOG, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q99(self): #REL !=
         verify = self.getCharacter()
@@ -3804,6 +3837,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q100(self): #REL =
@@ -3827,6 +3864,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q101(self): #REL <
         verify = self.getCharacter()
@@ -3848,6 +3889,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q102(self): #REL >
@@ -3871,6 +3916,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q103(self): #REL ==
         verify = self.getCharacter()
@@ -3890,6 +3939,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q104(self): #REL <=
@@ -3911,6 +3964,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q105(self): #REL >=
         verify = self.getCharacter()
@@ -3930,6 +3987,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q106(self): #DEL ;
@@ -3951,6 +4012,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q107(self): #DEL ,
         verify = self.getCharacter()
@@ -3970,6 +4035,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q108(self): #DEL .
@@ -3991,6 +4060,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q109(self): #DEL (
         verify = self.getCharacter()
@@ -4010,6 +4083,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q110(self): #DEL )
@@ -4031,6 +4108,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q111(self): #DEL [
         verify = self.getCharacter()
@@ -4050,6 +4131,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q112(self): #DEL ]
@@ -4071,6 +4156,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q113(self): #DEL {
         verify = self.getCharacter()
@@ -4090,6 +4179,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
             self.q0()
     
     def q114(self): #DEL }
@@ -4111,6 +4204,10 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
+            self.q0()
     
     def q115(self): #DEL ->
         verify = self.getCharacter()
@@ -4130,6 +4227,10 @@ class LexicalAnalyzer:
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
+            self.q0()
+        else:
+            self.__header = self.__header - 1
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme[:-1] + ">")
             self.q0()
 
     def q116(self): #IDE
@@ -4421,8 +4522,3 @@ class LexicalAnalyzer:
             self.q0()
         else:
             self.q126()
-        
-    
-
-
-LexicalAnalyzer().startTokenizer()
