@@ -4318,7 +4318,7 @@ class LexicalAnalyzer:
             self.q118()
         elif verify == ' ' or verify == '\n':
             self.__lexeme = self.__lexeme[:-1]
-            self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
             self.q0()
@@ -4327,7 +4327,7 @@ class LexicalAnalyzer:
         elif verify == '/':
             flag = self.getCharacter()
             if flag == '*':
-                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme + ">")
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
                 self.__header = self.__header-2
                 self.q0()
             else:
@@ -4336,7 +4336,7 @@ class LexicalAnalyzer:
         elif verify == '&':
             flag = self.getCharacter()
             if flag == '&':
-                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme[:-1] + ">")
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme[:-1] + ">")
                 self.__header = self.__header-2
                 self.q0()
             else:
@@ -4345,7 +4345,7 @@ class LexicalAnalyzer:
         elif verify == '|':
             flag = self.getCharacter()
             if flag == '|':
-                self.__errors_table.append(str(self.__line_counter) + ": " + "<NMF, " + self.__lexeme[:-1] + ">")
+                self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme[:-1] + ">")
                 self.__header = self.__header-2
                 self.q0()
             else:
@@ -4522,3 +4522,7 @@ class LexicalAnalyzer:
             self.q0()
         else:
             self.q126()
+
+
+
+LexicalAnalyzer().startTokenizer()
