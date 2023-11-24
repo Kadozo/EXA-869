@@ -1,5 +1,6 @@
 import os
 import platform
+from sintaxicalAnalyzer import SintaxicalAnalyzer
 
 class LexicalAnalyzer:
     def __init__(self) -> None:
@@ -47,17 +48,7 @@ class LexicalAnalyzer:
             self.getText(filename)
             self.q0()
             print(filename)
-            with open(self.__inputdir+filename[:-4]+"-saída.txt", 'w') as file_writer:
-                for element in self.__tokens_table:
-                    file_writer.write(element)
-                    file_writer.write('\n')
-                if(len(self.__errors_table)>0):
-                        file_writer.write('\n')
-                        file_writer.write('-----------------TABELA DE ERROS-----------------\n')
-                        for element in self.__errors_table:
-                            file_writer.write('\n')
-                            file_writer.write(element)
-                file_writer.close()
+            SintaxicalAnalyzer(errors_table=self.__errors_table, tokens_table=self.__tokens_table, filename=filename).start_analysis()
             self.__header = 0
             self.__line_counter = 1
             self.__tokens_table = []
@@ -4033,7 +4024,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4057,7 +4048,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4081,7 +4072,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4105,7 +4096,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4129,7 +4120,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4153,7 +4144,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4177,7 +4168,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4201,7 +4192,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
@@ -4225,7 +4216,7 @@ class LexicalAnalyzer:
             self.q0()
         elif verify.isdecimal() or (verify.isalpha() and verify>='A' and verify<='z'):
             self.__lexeme = self.__lexeme[:-1]
-            self.__tokens_table.append(str(self.__line_counter) + ": " + "<REL, " + self.__lexeme + ">")
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<DEL, " + self.__lexeme + ">")
             self.__header = self.__header - 1
             self.q0()
         else:
