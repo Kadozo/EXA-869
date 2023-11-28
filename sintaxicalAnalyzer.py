@@ -31,6 +31,12 @@ class SintaxicalAnalyzer():
             return (token["token"] == "true") | (token["token"] == "false")
         def _is_CAC(self,token):
             return token["type"] == "CAC"
+        def _is_ART(self,token):
+            return token["type"] == "ART"
+        def _is_REL(self,token):
+            return token["type"] == "REL"
+        def _is_LOG(self,token):
+            return token["type"] == "LOG"
         def _is_ATTRIBUTION(self,token):
             return (self._is_NRO(token)) | (self._is_BOOL(token)) | (self._is_CAC(token))
 
@@ -137,7 +143,7 @@ class SintaxicalAnalyzer():
         def _dimensions(self):
             token = self.next_token()
             if token["token"] == "[":
-                self._size_dimensions
+                self._size_dimensions()
                 token = self.next_token()
                 if token["token"] == "]":
                      self._dimensions()
@@ -337,13 +343,17 @@ class SintaxicalAnalyzer():
             self._commands_method_body()
 #Comandos
         def _commands_method_body(self):
+            self._commands()
             token = self.next_token()
             if token["token"] == 'return':
                 self._return()
+                token = self.next_token()
+                if token["token"] == ';':
+                    token = self.next_token()
+                    if token["token"] == '}':
+                        pass
             else:
-                self._header -= 1
-                self._commands()
-                self._commands_method_body
+                self._error_message(expected=['return'], founded=token['token'], line=token["line"])
         def _commands(self):
             token = self.next_token()
             self._header -= 1
@@ -351,16 +361,8 @@ class SintaxicalAnalyzer():
                 self._print_begin()
             elif token["token"] == 'read':
                 self._read_begin()
-            elif token["token"] == '->':
-                self._object_method_access()
-                token = self.next_token()
-                if token["token"] == ';':
-                    pass
-                else:
-                    self._error_message(expected=[";"],founded=token["token"], line=token["line"])
             elif self._is_IDE(token):
-                print('implementar commands->ASSIGMENT, -> OBJECT ATRIBUTE ACESS, -> DOUBLE EXPRESSION dps')
-                self._object_atribute_acess() #PENSAR EM COMO IMPLEMENTAR O BLOCO ASSIGMENT, DOUBLE EXPRESSION NESSE CONTEXTO, PROVAVELMENTE MUDAR A GRAMÁTICA NO OBJECT ATRIBUTE ACESS
+                self._object_access_or_assigment() #PENSAR EM COMO IMPLEMENTAR O BLOCO ASSIGMENT, DOUBLE EXPRESSION NESSE CONTEXTO, PROVAVELMENTE MUDAR A GRAMÁTICA NO OBJECT ATRIBUTE ACESS
                 token = self.next_token()
                 if token["token"] == ';':
                     pass
@@ -372,12 +374,188 @@ class SintaxicalAnalyzer():
                 self._for_block()
             else:
                 self._header -= 1
+            
         def _return(self):
             token = self.next_token()
             #if token[token] <VALUE>
             #else:
             print('implementar return dps')
             pass
+
+#Bloco de atribuição       
+        def _object_access_or_assigment(self):
+            self._dec_object_atribute_access()
+            self._object_access_or_assigment_end()
+        
+        def _object_access_or_assigment_end(self):
+            token = self.next_token()
+            if token["token"] == '->':
+                self._object_method_access_end()
+            elif token["token"] == '=':
+                self._value()
+            elif token["token"] == '++'| token["token"] == '--':
+                pass
+            else:
+                self._error_message(expected=['->','=','++','--'], founded=token["token"], line=token["line"])
+        
+        def _object_method_access_end(self):
+            self._ide_or_constructor()
+            token = self.next_token
+            if token["token"] == '(':
+                self._parameters()
+                token = self.next_token()
+                if token["token"] == ')':
+                    pass
+                else:
+                    self._error_message(expected=[')'], founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=['('], founded=token["token"], line=token["line"])
+        
+        def _parameters(self):
+            token = self.next_token()
+            if self._is_CAC(token=token) | self._is_NRO(token=token) | token["token"] == '['|self._is_IDE(token)| token["token"] == '!' | token["token"] == '('|self._is_BOOL(token):
+                self._header -= 1
+                self._value()
+            else:
+                self._header -= 1
+        
+        def _value(self):
+            token = self.next_token()
+            if self._is_NRO(token):
+                self._simple_or_double_arithimetic_expression_optional()
+            elif self._is_CAC(token):
+                pass
+            elif token["token"] == '[':
+                self._header -= 1
+                self._vector_assign_block()
+            elif self._is_IDE(token):
+                self._header -= 1
+                self._init_expression()
+            elif token["token"] == "!":
+                self._logical_expression_begin()
+                self._logical_expression_end() 
+            elif token["token"] == '(':
+                self._header -= 1
+                self._arithimetic_or_logical_expression_with_parentheses()
+            elif self._is_BOOL(token):
+                pass
+
+        def _simple_or_double_arithimetic_expression_optional(self):
+            token = self.next_token()
+            if self._is_ART(token):
+                self._header -=  1
+                self._simple_or_double_arithimetic_expression()
+            else:
+                self._header -= 1
+                pass
+        
+        def _init_expression(self):
+            self._dec_object_atribute_access()
+            self._arithimetic_or_logical_expression()
+        
+        def _arithimetic_or_logical_expression(self):
+            token = self.next_token()
+            if token['token'] == '->'|self._is_REL(token)|self._is_LOG(token):
+                self._header -= 1
+                self._optional_object_method_access()
+                self._log_rel_optional()
+                self._logical_expression_end()
+            elif token['token'] == '--' | token["token"] == '++'| self._is_ART(token):
+                self._header -= 1
+                self._simple_or_double_arithimetic_expression()
+        
+        def _arithimetic_or_logical_expression_with_parentheses(self):
+            self._parentheses_begin()
+        
+        def _parentheses_begin(self):
+            token = self.next_token()
+            if token["token"] == '(':
+                self._expressions()
+                self._parentheses_end()
+            else: 
+                self._error_message(expected=['('], founded=token["token"])
+
+        def _expressions(self):
+            token = self.next_token()
+            self._header -= 1
+            if token["token"] == '(':
+                self._parentheses_begin()
+            elif self.is_NRO(token):
+                self._simple_expression_without_parentheses()
+            elif self._is_BOOL(token):
+                self._logical_expression_without_parentheses()
+            elif self._is_IDE(token):
+                self._simple_or_logical_ide_begin()
+            else:
+                self._error_message(expected=['(','<NRO>','Boolean','<IDE>'], founded=token["token"])
+        
+        def _simple_or_logical_ide_begin(self):
+            self._dec_object_atribute_access()
+            self._simple_or_logical_ide_end()
+        
+        def _simple_or_logical_ide_end(self):
+            token = self.next_token()
+            self._header -= 1
+            if self._is_ART(token):
+                self._end_expression()
+            elif token["token"] == '->' | self.is_REL(token)|self._is_LOG(token):
+                self._optional_object_method_access()
+                self._log_rel_optional()
+                self._logical_expression_end()
+            else:
+                self._error_message(expected=['<ART>','->','<REL>','<LOG>'],founded=token["token"])
+        
+        def _parentheses_end(self):
+            token = self.next_token()
+            if token[token] == ')':
+                self._expressions_without_parentheses_end()
+            else:
+                self._error_message(expected=[')'], founded=token["token"])
+
+        def _expression_without_parentheses_end(self):
+            token = self.next_token()
+            if self._is_ART(token):
+                self._header -= 1
+                self._end_expression()
+            elif self._is_LOG(token):
+                self._logical_expression_begin()
+                self._logical_expression_end()
+            else:
+                self._header -= 1
+                pass
+        
+        def _simple_expression_without_parentheses(self):
+            token = self.next_token()
+            if self._is_NRO(token):
+                self._end_expression()
+            else:
+                self._error_message(expected=['<NRO>'],founded=token["token"])
+        
+        def _logical_expression_without_parentheses(self):
+            token = self.next_token()
+            if self._is_BOOL(token):
+                self._logical_expression_end()
+            elif token["token"] == '!':
+                self._logical_expression_begin()
+                self._logical_expression_end()
+            else:
+                self._error_message(expected=["Boolean",'!'], founded=token["token"])
+        
+        def _vector_assign_block(self):
+            token = self.next_token()
+            if token["token"] == '[':
+                self._elements_assign()
+                token = self.next_token()
+                if token["token"] == ']':
+                    pass
+                else:
+                    self._error_message(expected=[']'],founded=token["token"])
+            else:
+                self._error_message(expected=['['],founded=token["token"])
+
+        def _elements_assign(self):
+            print("implementar")
+
 #Bloco de métodos
         def _methods_block(self):
             token = self.next_token()
