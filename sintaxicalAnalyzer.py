@@ -74,6 +74,7 @@ class SintaxicalAnalyzer():
                 self._end_object_attribute_access()
             else:
                 self._error_message(expected=["<IDE>"],founded=token["token"], line=token["line"])
+        
 
 
 
@@ -332,6 +333,7 @@ class SintaxicalAnalyzer():
             if self._is_IDE(token):
                 self._dec_var()
                 self._multiple_objects()
+                self._objects()
             elif token["token"] == '}':
                 pass
             else:
@@ -384,14 +386,14 @@ class SintaxicalAnalyzer():
             elif token["token"] == 'for':
                 self._for_block()
             else:
-                self._header -= 1
+                pass
             
         def _return(self):
             token = self.next_token()
-            #if token[token] <VALUE>
-            #else:
-            print('implementar return dps')
-            pass
+            if self._is_CAC(token=token) | self._is_NRO(token=token) | (token["token"] == '[') |self._is_IDE(token)| (token["token"] == '!') | (token["token"] == '(')|self._is_BOOL(token):
+                self._value()
+            else:
+                self._header -= 1
 
 #Bloco de atribuição       
         def _object_access_or_assigment(self):
@@ -427,9 +429,28 @@ class SintaxicalAnalyzer():
             if self._is_CAC(token=token) | self._is_NRO(token=token) | token["token"] == '['|self._is_IDE(token)| token["token"] == '!' | token["token"] == '('|self._is_BOOL(token):
                 self._header -= 1
                 self._value()
+                self._mult_parameters()
             else:
                 self._header -= 1
         
+        def _mult_parameters(self):
+            token = self.next_token()
+            if token["token"] == ',':
+                self._value()
+                self._mult_parameters()
+            else:
+                self._header -= 1
+        
+        def _object_method_or_object_access_or_part(self):
+            token = self.next_token()
+            self._header -= 1
+            if self._is_IDE(token):
+                self._dec_object_attribute_access()
+                self._optional_object_method_access()
+            else:
+                self._error_message(expected=['<IDE>'], founded=token["token"], line=token["line"])
+        
+
         def _value(self):
             token = self.next_token()
             if self._is_NRO(token):
@@ -801,4 +822,33 @@ class SintaxicalAnalyzer():
         
 #declaração de parameters
         def _dec_parameters(self):
-            pass
+            token = self.next_token()
+            self.header -= 1
+            if self._is_TYPE(token):
+                self._variable_param()
+                self._mult_dec_parameters()
+            elif self._is_IDE(token):
+                self._object_param()
+                self._mult_dec_parameters()
+            elif token["token"] == ')':
+                self._end_dec_parameters()
+            else:
+                self._error_message(expected=["IDE","void","int","real","boolean","string",')'],founded=token["token"], line=token["line"])
+        
+        def _mult_dec_parameters(self):
+            token = self.next_token()
+            if token["token"] == ',':
+                token = self.next_token()
+                if self._is_TYPE(token)| self._is_IDE(token):
+                    token = self.next_token()
+                    if self._is_IDE(token):
+                        self._mult_dec_parameters()
+                    else:
+                        self._error_message(expected=["<IDE>"],founded=token["token"], line=token["line"])
+                else:
+                    self._error_message(expected=["<IDE>","void","int","real","boolean","string"],founded=token["token"], line=token["line"])
+            elif token["token"] == ')':
+                self._header -= 1
+                self._end_dec_parameters()
+            else:
+                self._error_message(expected=[",",")"],founded=token["token"], line=token["line"])
