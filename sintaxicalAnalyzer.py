@@ -32,7 +32,7 @@ class SintaxicalAnalyzer():
         def _is_CAC(self,token):
             return token["type"] == "CAC"
         def _is_ART(self,token):
-            return token["type"] == "ART"
+            return token["type"] == "ART" and token["token"] != '++' and token["token"] != '--'
         def _is_REL(self,token):
             return token["type"] == "REL"
         def _is_LOG(self,token):
@@ -65,6 +65,17 @@ class SintaxicalAnalyzer():
                  self.is_EOF = True
                  token = {"line":"","type":"EOF", "token":"EOF"}
                  return token
+## RULES
+
+        def _dec_object_attribute_access(self):
+            token = self.next_token()
+            if self._is_IDE(token):
+                self._dimensions()
+                self._end_object_attribute_access()
+            else:
+                self._error_message(expected=["<IDE>"],founded=token["token"], line=token["line"])
+
+
 
 ## BLOCO DE CONSTANTES
         def _const_block(self):
@@ -384,7 +395,7 @@ class SintaxicalAnalyzer():
 
 #Bloco de atribuição       
         def _object_access_or_assigment(self):
-            self._dec_object_atribute_access()
+            self._dec_object_attribute_access()
             self._object_access_or_assigment_end()
         
         def _object_access_or_assigment_end(self):
@@ -450,7 +461,7 @@ class SintaxicalAnalyzer():
                 pass
         
         def _init_expression(self):
-            self._dec_object_atribute_access()
+            self._dec_object_attribute_access()
             self._arithimetic_or_logical_expression()
         
         def _arithimetic_or_logical_expression(self):
@@ -473,24 +484,24 @@ class SintaxicalAnalyzer():
                 self._expressions()
                 self._parentheses_end()
             else: 
-                self._error_message(expected=['('], founded=token["token"])
+                self._error_message(expected=['('], founded=token["token"],line=token['line'])
 
         def _expressions(self):
             token = self.next_token()
             self._header -= 1
             if token["token"] == '(':
                 self._parentheses_begin()
-            elif self.is_NRO(token):
+            elif self._is_NRO(token):
                 self._simple_expression_without_parentheses()
             elif self._is_BOOL(token):
                 self._logical_expression_without_parentheses()
             elif self._is_IDE(token):
                 self._simple_or_logical_ide_begin()
             else:
-                self._error_message(expected=['(','<NRO>','Boolean','<IDE>'], founded=token["token"])
+                self._error_message(expected=['(','<NRO>','Boolean','<IDE>'], founded=token["token"],line=token['line'])
         
         def _simple_or_logical_ide_begin(self):
-            self._dec_object_atribute_access()
+            self._dec_object_attribute_access()
             self._simple_or_logical_ide_end()
         
         def _simple_or_logical_ide_end(self):
@@ -503,14 +514,14 @@ class SintaxicalAnalyzer():
                 self._log_rel_optional()
                 self._logical_expression_end()
             else:
-                self._error_message(expected=['<ART>','->','<REL>','<LOG>'],founded=token["token"])
+                self._error_message(expected=['<ART>','->','<REL>','<LOG>'],founded=token["token"],line=token['line'])
         
         def _parentheses_end(self):
             token = self.next_token()
             if token[token] == ')':
                 self._expressions_without_parentheses_end()
             else:
-                self._error_message(expected=[')'], founded=token["token"])
+                self._error_message(expected=[')'], founded=token["token"],line=token['line'])
 
         def _expression_without_parentheses_end(self):
             token = self.next_token()
@@ -529,7 +540,7 @@ class SintaxicalAnalyzer():
             if self._is_NRO(token):
                 self._end_expression()
             else:
-                self._error_message(expected=['<NRO>'],founded=token["token"])
+                self._error_message(expected=['<NRO>'],founded=token["token"],line=token['line'])
         
         def _logical_expression_without_parentheses(self):
             token = self.next_token()
@@ -539,7 +550,7 @@ class SintaxicalAnalyzer():
                 self._logical_expression_begin()
                 self._logical_expression_end()
             else:
-                self._error_message(expected=["Boolean",'!'], founded=token["token"])
+                self._error_message(expected=["Boolean",'!'], founded=token["token"],line=token['line'])
         
         def _vector_assign_block(self):
             token = self.next_token()
@@ -549,12 +560,203 @@ class SintaxicalAnalyzer():
                 if token["token"] == ']':
                     pass
                 else:
-                    self._error_message(expected=[']'],founded=token["token"])
+                    self._error_message(expected=[']'],founded=token["token"],line=token['line'])
             else:
-                self._error_message(expected=['['],founded=token["token"])
+                self._error_message(expected=['['],founded=token["token"],line=token['line'])
 
         def _elements_assign(self):
-            print("implementar")
+           self._element_assign()
+           self._multiple_elements_assign()
+        
+        def _n_dimensions_assign(self):
+            token = self.next_token()
+            if token["token"] == '[':
+                self._elements_assign()
+                token = self.next_token()
+                if token["token"] == ']':
+                    pass
+                else:
+                    self._error_message(expected=[']'],founded=token["token"],line=token['line'])
+            else:
+                self._header -= 1
+        
+        def _multiple_elements_assign(self):
+            token = self.next_token()
+            if token['token'] == ',':
+                self._element_assign()
+                self._multiple_elements_assign()
+            else:
+                self._header -= 1
+        
+        def _element_assign(self):
+            token = self.next_token()
+            if self._is_IDE(token):
+                pass
+            elif self._is_CAC(token):
+                pass
+            elif self._is_NRO(token):
+                pass
+            elif token["token"] == '[':
+                self._header -= 1
+                self._n_dimensions_assign()
+            else:
+                self._error_message(expected=['[',"<NRO>","<CAC>","<IDE>"],founded=token["token"],line=token['line'])
+
+#Print e Read
+        def _print_begin(self):
+            token = self.next_token()
+            if token[token] == 'print':
+                if token[token] == '(':
+                    self._print_end()
+                else:
+                    self._error_message(expected=['('],founded=token["token"],line=token['line'])
+            else:
+                    self._error_message(expected=['print'],founded=token["token"],line=token['line'])
+        
+        def _print_end(self):
+            self._print_parameter()
+            token = self.next_token()
+            if token["token"] == ')':
+                token = self.next_token()
+                if token["token"] == ';':
+                    pass
+                else:
+                    self._error_message(expected=[';'],founded=token["token"],line=token['line'])
+            else:
+                self._error_message(expected=[')'],founded=token["token"],line=token['line'])
+
+        def _read_begin(self):
+            token = self.next_token()
+            if token[token] == 'read':
+                if token[token] == '(':
+                    self._read_end()
+                else:
+                    self._error_message(expected=['('],founded=token["token"],line=token['line'])
+            else:
+                    self._error_message(expected=['read'],founded=token["token"],line=token['line'])
+        
+        def _read_end(self):
+            self.dec_object_attribute_access()
+            token = self.next_token()
+            if token["token"] == ')':
+                token = self.next_token()
+                if token["token"] == ';':
+                    pass
+                else:
+                    self._error_message(expected=[';'],founded=token["token"],line=token['line'])
+            else:
+                self._error_message(expected=[')'],founded=token["token"],line=token['line'])
+
+        def _print_parameter(self):
+            token = self.next_token()
+            if self._is_IDE(token):
+                self._header -= 1
+                self._dec_object_attribute_access()
+            elif self._is_CAC(token):
+                pass
+            elif self._is_NRO():
+                pass
+            else:
+                self._error_message(expected=['<IDE>','<CAC>','<NRO>'],founded=token["token"],line=token['line'])
+
+#Bloco acesso a atributos e métodos de objetos
+        def _multiple_object_attribute_access(self):
+            self._dec_var()
+            self._end_object_attribute_access()
+        
+        def _end_object_attribute_access(self):
+            token = self.next_token()
+            if token['token'] == '.':
+                self._multiple_object_attribute_access()
+            else:
+                self._header -= 1
+        
+        def _object_method_or_object_access(self):
+            self._object_method_or_object_access_or_part()
+        
+        def _optional_object_method_access(self):
+            token = self.next_token()
+            self._header -= 1
+            if token["token"] == '->':
+                self._object_method_access_end()
+            else:
+                pass
+        
+        def _ide_or_constructor(self):
+            token = self.next_token()
+            if token["token"] == 'constructor':
+                pass
+            elif self._is_IDE(token):
+                pass
+            else:
+                self._error_message(expected=['constructor','<IDE>'], founded=token["token"],line=token["line"])
+
+#Bloco operadores aritméticos
+        def _simple_or_double_arithimetic_expression(self):
+            token = self.next_token()
+            if self._is_ART(token):
+                self._header -= 1
+                self._end_expression()
+            elif token["token"] == '++'| token["token"] == '--':
+                pass
+            else:
+                self._error_message(expected=['<ART>'], founded=token["token"],line=token["line"])
+
+        def _end_expression_optional(self):
+            token = self.next_token()
+            self._header -= 1
+            if self._is_ART(token):
+                self._end_expression()
+            else:
+                pass
+        
+        def _simple_expression(self):
+            token = self.next_token()
+            self.header -= 1
+            if self._is_NRO(token) | self.is_IDE(token):
+                self._part()
+                self._end_expression()
+            elif token['token'] == '(':
+                self._parenthesis_expression()
+
+        def _parenthesis_expression(self):
+            token = self.next_token()
+            if token['token'] == '(':
+                self._simple_expression()
+                token = self.next_token()
+                if token['token'] == ')':
+                    self._end_expression_optional()
+                else:
+                    self._error_message(expected=[')'], founded=token["token"],line=token["line"])
+            else:
+                self._error_message(expected=['('], founded=token["token"],line=token["line"])
+
+        def _end_expression(self):
+            token = self.next_token()
+            if self._is_ART(token):
+                self._part_loop()
+            else:
+                self._error_message(expected=['<ART>'], founded=token["token"],line=token["line"])
+
+        def _part_loop(self):
+            token = self.next_token()
+            self._header -= 1
+            if self._is_NRO(token) | self.is_IDE(token):
+                self._part()
+                self._end_expression_optional()
+            elif token["token"] == '(':
+                self._parenthesis_expression()
+            else:
+                self._error_message(expected=['(','<NRO>','<IDE>'], founded=token["token"],line=token["line"])
+
+        def _part(self):
+            token = self.next_token()
+            if self._is_NRO(token):
+                pass
+            elif self.is_IDE(token):
+                self._object_method_or_object_access_or_part()
+            else:
+                self._error_message(expected=['<NRO>','<IDE>'], founded=token["token"],line=token["line"])
 
 #Bloco de métodos
         def _methods_block(self):
