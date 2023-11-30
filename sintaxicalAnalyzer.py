@@ -852,3 +852,180 @@ class SintaxicalAnalyzer():
                 self._end_dec_parameters()
             else:
                 self._error_message(expected=[",",")"],founded=token["token"], line=token["line"])
+        
+        def _end_dec_parameters(self):
+            token = self.next_token()
+            if token["token"] == ')':
+                token = self.next_token()
+                if token["token"] == '{':
+                    self._method_body()
+                else:
+                    self._error_message(expected=["{"],founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=[")"],founded=token["token"], line=token["line"])
+#If-else
+
+        def _if(self):
+            token = self.next_token()
+            if token['token'] == 'if':
+                token = self.next_token()
+                if token['token'] == '(':
+                    self._condition()
+                    token = self.next_token()
+                    if token['token'] == ')':
+                        if token['token'] == 'then':
+                            token = self.next_token()
+                            if token['token'] == '{':
+                                self._commands()
+                                token = self.next_token()
+                                if token['token'] == '}':
+                                    self._if_else()
+                                else:
+                                    self._error_message(expected=["}"],founded=token["token"], line=token["line"])
+                            else:
+                                self._error_message(expected=["{"],founded=token["token"], line=token["line"])
+                        else:
+                            self._error_message(expected=["then"],founded=token["token"], line=token["line"])
+                    else:
+                        self._error_message(expected=[")"],founded=token["token"], line=token["line"])
+                else:
+                    self._error_message(expected=["("],founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=[")"],founded=token["token"], line=token["line"])
+        
+        def _if_else(self):
+            token = self.next_token()
+            if token['token'] == 'else':
+                token = self.next_token()
+                if token['token'] == '{':
+                    self._commands()
+                    token = self.next_token()
+                    if token['token'] == '}':
+                        pass
+                else:
+                    self._error_message(expected=["{"],founded=token["token"], line=token["line"])
+            else:
+                self._header -= 1
+        
+        def _condition(self):
+            self._logical_expression()
+# Parametros construtor
+        def _dec_parameters_constructor(self):
+            token = self.next_token()
+            self._header -= 1
+            if self._is_TYPE(token)| self._is_IDE(token):
+                self._mult_param_constructor()
+                self._mult_dec_parameters_constructor()
+            else:
+                pass
+
+        def _variable_param(self):
+            token = self.next_token()
+            if self._is_TYPE(token):
+                token = self.next_token()
+                if self._is_IDE(token):
+                    pass
+                else:
+                    self._error_message(expected=['<IDE>'],founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=['int','real','boolean','string'],founded=token["token"], line=token["line"])
+
+        def _object_param(self):
+            token = self.next_token()
+            if self._is_IDE(token):
+                token = self.next_token()
+                if self._is_IDE(token):
+                    pass
+                else:
+                    self._error_message(expected=['<IDE>'],founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=['<IDE>'],founded=token["token"], line=token["line"])
+        
+        def _mult_dec_parameters_constructor(self):
+            token = self.next_token()
+            if token["token"] == ',':
+                self._mult_param_constructor()
+                self._mult_dec_parameters_constructor()
+            else:
+                self._header -= 1
+        
+        def _mult_param_constructor(self):
+            token = self.next_token()
+            self._header -= 1
+            if self._is_TYPE(token):
+                self._variable_param()
+            elif self._is_IDE(token):
+                self._object_param()
+            else:
+                self._error_message(expected=['int','real','boolean','string','<IDE>'],founded=token["token"], line=token["line"])
+#Bloco for
+
+        def _for_block(self):
+            self._begin_for()
+            self._for_increment()
+            self._end_for()
+
+        def _assignment(self):
+            token = self.next_token()
+            if token["token"] == '=':
+                self._value()
+            elif token["token"] == '--' | token["token"] == '++':
+                pass
+            else:
+                self._error_message(expected=['=', '--', '++'],founded=token["token"], line=token["line"])
+
+        def _for_increment(self):
+            self._dec_object_attribute_access()
+            self._assignment
+        
+        def _begin_for(self):
+            token = self.next_token()
+            if token["token"] == 'for':
+                token = self.next_token()
+                if token["token"] == '(':
+                    self._object_access_or_assigment()
+                    token = self.next_token()
+                    if token["token"] == ';':
+                        self._conditional_expression()
+                        token = self.next_token()
+                        if token["token"] == ';':
+                            pass
+                        else:
+                            self._error_message(expected=[';'],founded=token["token"], line=token["line"])
+                    else:
+                        self._error_message(expected=[';'],founded=token["token"], line=token["line"])
+                else:
+                    self._error_message(expected=['('],founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=['for'],founded=token["token"], line=token["line"])
+    
+        def _end_for(self):
+            token = self.next_token()
+            if token["token"] == ')':
+                token = self.next_token()
+                if token["token"] == '{': 
+                    self._commands()
+                    token = self.next_token()
+                    if token["token"] == '}':
+                       pass
+                    else:
+                        self._error_message(expected=['}'],founded=token["token"], line=token["line"])
+                else:
+                    self._error_message(expected=['{'],founded=token["token"], line=token["line"])
+            else:
+                self._error_message(expected=[')'],founded=token["token"], line=token["line"])
+        
+        def _conditional_expression(self):
+            token = self.next_token()
+            if self.IS_IDE(token) | self._is_CAC(token) | self._is_NRO(token):
+                self._header -= 1
+                self._relational_expression()
+            elif token['token'] == '(':
+                self._relational_expression()
+                token = self.next_token()
+                if token['token'] == ')':
+                    pass
+                else:
+                   self._error_message(expected=[')'],founded=token["token"], line=token["line"]) 
+            else:
+                self._error_message(expected=['(',',<IDE>','<NRO>','<CAC>'],founded=token["token"], line=token["line"])
