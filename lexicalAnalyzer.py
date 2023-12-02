@@ -1,6 +1,9 @@
 import os
 import platform
 from sintaxicalAnalyzer import SintaxicalAnalyzer
+import sys
+
+sys.setrecursionlimit(100000)
 
 class LexicalAnalyzer:
     def __init__(self) -> None:
@@ -4312,6 +4315,11 @@ class LexicalAnalyzer:
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
+            self.q0()
+        elif verify == ',':
+            self.__lexeme = self.__lexeme[:-1]
+            self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
+            self.__header -= 1
             self.q0()
         elif verify == '.':
             self.q123()
