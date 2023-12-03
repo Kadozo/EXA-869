@@ -1,24 +1,27 @@
-
-'''with open(self.__inputdir+filename[:-4]+"-saída.txt", 'w') as file_writer:
-                for element in self.__tokens_table:
-                    file_writer.write(element)
-                    file_writer.write('\n')
-                if(len(self.__errors_table)>0):
-                        file_writer.write('\n')
-                        file_writer.write('-----------------TABELA DE ERROS-----------------\n')
-                        for element in self.__errors_table:
-                            file_writer.write('\n')
-                            file_writer.write(element)
-                file_writer.close()'''
-
 class SintaxicalAnalyzer():
         def __init__(self,tokens_table,errors_table,filename) -> None:
+                self._inputdir = "./Files/"
                 self.is_EOF = False
                 self._tokens_table = tokens_table
                 self._length_tokens_table = len(tokens_table)
-                self._erros_table = errors_table
-                self.filename = filename
+                self._errors_table = errors_table
+                self._filename = filename
                 self._header = 0
+        
+        def _save_output(self):
+            with open(self._inputdir+self._filename[:-4]+"-saída.txt", 'w') as file_writer:
+                for element in self._tokens_table:
+                    file_writer.write(element)
+                    file_writer.write('\n')
+                if(len(self._errors_table)>0):
+                        file_writer.write('\n')
+                        file_writer.write('-----------------TABELA DE ERROS-----------------\n')
+                        for element in self._errors_table:
+                            file_writer.write('\n')
+                            file_writer.write(element)
+                else:
+                   file_writer.write("Analise Sintatica feita com sucesso!") 
+                file_writer.close()
 
         def _is_TYPE(self,token):
              return token["token"] in ['int','real','boolean','string']
@@ -42,7 +45,7 @@ class SintaxicalAnalyzer():
             return (self._is_NRO(token)) | (self._is_BOOL(token)) | (self._is_CAC(token))
 
         def _error_message(self,line:str,expected:[],founded:str):
-            print("Erro na linha " + line + ", no token " + str(self._header) + ", era esperado um dos seguintes tokens:", expected, "mas foi encontrado: " + founded)
+            self._errors_table.append("Erro na linha " + line + ", no token " + str(self._header) + ", era esperado um dos seguintes tokens: " + str(expected) + " mas foi encontrado: " + founded)
         
         def start_analysis(self):
             while not self.is_EOF:
@@ -54,7 +57,7 @@ class SintaxicalAnalyzer():
                         self._class_block()    
                     else:
                         self._error_message(line=token["line"],founded=token["token"],expected=["const"])
-            print("Finalizou a Análise Sintática")  
+            self._save_output() 
         
         def next_token(self) -> object:
             if self._header < self._length_tokens_table:
