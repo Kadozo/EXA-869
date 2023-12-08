@@ -559,7 +559,7 @@ class SintaxicalAnalyzer():
             self._header -= 1
             if self._is_ART(token):
                 self._end_expression()
-            elif token["token"] == '->' | self.is_REL(token)|self._is_LOG(token):
+            elif (token["token"] == '->') | self.is_REL(token)|self._is_LOG(token):
                 self._optional_object_method_access()
                 self._log_rel_optional()
                 self._logical_expression_end()
@@ -1001,7 +1001,7 @@ class SintaxicalAnalyzer():
             token = self.next_token()
             if token["token"] == '=':
                 self._value()
-            elif token["token"] == '--' | token["token"] == '++':
+            elif token["token"] in ['--','++']:
                 pass
             else:
                 self._error_message(expected=['=', '--', '++'],founded=token["token"], line=token["line"])
