@@ -1,3 +1,5 @@
+from semanticalAnalyzer import SemanticalAnalyzer
+
 class SintaxicalAnalyzer():
         def __init__(self,tokens_table,errors_table,filename) -> None:
                 self._inputdir = "./Files/"
@@ -7,8 +9,10 @@ class SintaxicalAnalyzer():
                 self._errors_table = errors_table
                 self._filename = filename
                 self._header = 0
+                self.semanticalAnalyzer = SemanticalAnalyzer()
         
         def _save_output(self):
+            print(self.semanticalAnalyzer.global_scope_table)
             with open(self._inputdir+self._filename[:-4]+"-saída.txt", 'w') as file_writer:
                 for element in self._tokens_table:
                     file_writer.write(element)
@@ -48,6 +52,7 @@ class SintaxicalAnalyzer():
             self._errors_table.append("Erro na linha " + line + ", no token " + str(self._header) + ", era esperado um dos seguintes tokens: " + str(expected) + " mas foi encontrado: " + founded)
         
         def start_analysis(self):
+            
             while not self.is_EOF:
                 token = self.next_token()
                 if not self.is_EOF:
@@ -94,6 +99,7 @@ class SintaxicalAnalyzer():
         def _consts(self):
             token = self.next_token()
             if self._is_TYPE(token):
+                self.semanticalAnalyzer.actual_type = token["token"]
                 self._const_attribution()
                 self._multiple_consts()
                 self._consts()
@@ -105,11 +111,30 @@ class SintaxicalAnalyzer():
         def _const_attribution(self):
             token = self.next_token()
             if self._is_IDE(token):
+                self.semanticalAnalyzer.actual_name = token["token"]
                 token = self.next_token()
                 if token["token"] == "=":
                     token = self.next_token()
                     if self._is_ATTRIBUTION(token):
-                           pass
+                        if token["type"] == "NRO":
+                            match self.semanticalAnalyzer.actual_type:
+                                case "int":
+                                    if not '.' in token["token"]:
+                                        self.semanticalAnalyzer.add_declaration_const()
+                                        pass #sucesso
+                                    else:
+                                        print("Incompatibilidade de tipo") #erro de incompatibilidade de tipo
+                                case "real":
+                                    if '.' in token["token"]:
+                                        self.semanticalAnalyzer.add_declaration_const()
+                                        pass #sucesso
+                                    else:
+                                        print("Incompatibilidade de tipo") #erro de incompatibilidade de tipo
+                        elif token["type"] == "CAC":
+                            if self.semanticalAnalyzer.actual_type == 'string':
+                                self.semanticalAnalyzer.add_declaration_const()
+                            else:
+                                print("Incompatibilidade de tipo")
                     else:
                        self._error_message(expected=["<NRO>",'<CAC>','<BOOL>'],founded=token["token"], line=token["line"]) 
                 else:
@@ -144,6 +169,7 @@ class SintaxicalAnalyzer():
         def _variables(self):
             token = self.next_token()
             if self._is_TYPE(token):
+                self.semanticalAnalyzer.actual_type = token["token"]
                 self._dec_var()
                 self._multiple_variables_line()
                 self._variables()
@@ -155,7 +181,12 @@ class SintaxicalAnalyzer():
         def _dec_var(self):
             token = self.next_token()
             if self._is_IDE(token):
+                self.semanticalAnalyzer.actual_name = token["token"]
                 self._dimensions()
+                if not self.semanticalAnalyzer.is_actual_object:
+                    self.semanticalAnalyzer.add_local_declaration_variable()
+                else:
+                    self.semanticalAnalyzer.add_local_declaration_object()
             else:
                 self._error_message(expected=["IDE"],founded=token["token"], line=token["line"])
         
@@ -165,6 +196,7 @@ class SintaxicalAnalyzer():
                 self._size_dimensions()
                 token = self.next_token()
                 if token["token"] == "]":
+                    self.semanticalAnalyzer.is_actual_vector = True
                     self._dimensions()
                 else:
                     self._error_message(expected=["]"],founded=token["token"], line=token["line"])
@@ -200,6 +232,7 @@ class SintaxicalAnalyzer():
         def _ide_class(self):
             token = self.next_token()
             if self._is_IDE(token):
+                self.semanticalAnalyzer.actual_name = token["token"]
                 self._extends()
             else:
                 self._header -= 1
@@ -210,15 +243,19 @@ class SintaxicalAnalyzer():
             if token["token"] == "extends":
                 token = self.next_token()
                 if self._is_IDE(token):
+                    self.semanticalAnalyzer.add_declaration_class(extends=True)
                     self._start_class_block()
                 else:
                     self._error_message(expected=["IDE"],founded=token["token"], line=token["line"])
             else:
+                self._header -= 1
+                self.semanticalAnalyzer.add_declaration_class(extends=False)
                 self._start_class_block()
 
         def _start_class_block(self):
             token = self.next_token()
             if token["token"] == "{":
+                self.semanticalAnalyzer.add_scope(self.semanticalAnalyzer.actual_name)
                 self._init_class()
             else:
                 self._error_message(expected=["{"],founded=token["token"], line=token["line"])
@@ -231,6 +268,7 @@ class SintaxicalAnalyzer():
         def _constructor(self):
             token = self.next_token()
             if token["token"] == "constructor":
+                self.semanticalAnalyzer.actual_name = token["token"]
                 token = self.next_token()
                 if token["token"] == "(":
                     self._dec_parameters_constructor()
@@ -238,11 +276,14 @@ class SintaxicalAnalyzer():
                     if token["token"] == ")":
                         token = self.next_token()
                         if token["token"] == '{':
+                            self.semanticalAnalyzer.add_local_declaration_method()
+                            self.semanticalAnalyzer.add_scope(self.semanticalAnalyzer.actual_name)
                             self._variables_block()
                             self._objects_block()
                             self._commands()
                             token = self.next_token()
                             if token["token"] == '}':
+                                self.semanticalAnalyzer.remove_scope()
                                 self._end_class()
                             else:
                                 self._error_message(expected=["}"],founded=token["token"], line=token["line"])
@@ -258,6 +299,7 @@ class SintaxicalAnalyzer():
         def _end_class(self):
             token = self.next_token()
             if token["token"] == "}":
+                self.semanticalAnalyzer.remove_scope()
                 self._class_block()
             else:
                 self._error_message(expected=["}"],founded=token["token"], line=token["line"])
@@ -265,8 +307,11 @@ class SintaxicalAnalyzer():
         def _main(self):
             token = self.next_token()
             if token["token"] == "main":
+                self.semanticalAnalyzer.actual_name = token["token"]
                 token = self.next_token()
                 if token["token"] == "{":
+                    self.semanticalAnalyzer.add_declaration_class(extends=False)
+                    self.semanticalAnalyzer.add_scope(self.semanticalAnalyzer.actual_name)
                     self._init_main()
                 else:
                     self._error_message(expected=["{"],founded=token["token"], line=token["line"])
@@ -278,7 +323,7 @@ class SintaxicalAnalyzer():
             self._main_methods()
             token = self.next_token()
             if token["token"] == "}":
-                pass
+                self.semanticalAnalyzer.remove_scope()
             else:
                 self._error_message(expected=["}"],founded=token["token"], line=token["line"])
         
@@ -305,14 +350,18 @@ class SintaxicalAnalyzer():
         def _main_methods_body(self):
             token = self.next_token()
             if (self._is_TYPE(token))|(token["token"] == 'void'):
+                self.semanticalAnalyzer.actual_type = token["token"]
                 token = self.next_token()
                 if token["token"] == 'main':
+                    self.semanticalAnalyzer.actual_name = token["token"]
                     token = self.next_token()
                     if token["token"] == '(':
                         token = self.next_token()
                         if token["token"] == ')':
                             token = self.next_token()
                             if token["token"] == '{':
+                                self.semanticalAnalyzer.add_local_declaration_method()
+                                self.semanticalAnalyzer.add_scope(self.semanticalAnalyzer.actual_name)
                                 self._method_body()
                                 self._methods()
                             else:
@@ -341,6 +390,8 @@ class SintaxicalAnalyzer():
         def _objects(self):
             token = self.next_token()
             if self._is_IDE(token):
+                self.semanticalAnalyzer.actual_type = token["token"]
+                self.semanticalAnalyzer.is_actual_object = True
                 self._dec_var()
                 self._multiple_objects()
                 self._objects()
@@ -372,6 +423,7 @@ class SintaxicalAnalyzer():
                 self._return()
                 token = self.next_token()
                 if token["token"] == ';':
+                    self.semanticalAnalyzer.verify_return_type()
                     token = self.next_token()
                     if token["token"] == '}':
                         pass
@@ -410,6 +462,7 @@ class SintaxicalAnalyzer():
         def _return(self):
             token = self.next_token()
             if self._is_CAC(token=token) | self._is_NRO(token=token) | (token["token"] == '[') |self._is_IDE(token)| (token["token"] == '!') | (token["token"] == '(')|self._is_BOOL(token):
+                self._header -= 1
                 self._value()
             else:
                 self._header -= 1
@@ -480,6 +533,7 @@ class SintaxicalAnalyzer():
         def _value(self):
             token = self.next_token()
             if self._is_NRO(token):
+                self.semanticalAnalyzer.add_type_arithmetic_expression(token)
                 self._simple_or_double_arithimetic_expression_optional()
             elif self._is_CAC(token):
                 pass
@@ -803,7 +857,7 @@ class SintaxicalAnalyzer():
         def _part(self):
             token = self.next_token()
             if self._is_NRO(token):
-                pass
+                self.semanticalAnalyzer.add_type_arithmetic_expression(token)
             elif self._is_IDE(token):
                 self._header -= 1
                 self._object_method_or_object_access_or_part()
@@ -819,6 +873,7 @@ class SintaxicalAnalyzer():
                     self._methods()
                     token = self.next_token()
                     if token["token"] == '}':
+                        self.semanticalAnalyzer.remove_scope()
                         pass
                     else:
                         self._error_message(expected=["}"],founded=token["token"], line=token["line"])
@@ -839,8 +894,10 @@ class SintaxicalAnalyzer():
         def _method(self):
             token = self.next_token()
             if self._is_TYPE(token) | self._is_IDE(token) | (token["token"] == 'void'):
+                self.semanticalAnalyzer.actual_type = token["token"]
                 token = self.next_token()
                 if self._is_IDE(token):
+                    self.semanticalAnalyzer.actual_name = token["token"]
                     token = self.next_token()
                     if token['token'] == '(':
                         self._dec_parameters()
@@ -871,8 +928,11 @@ class SintaxicalAnalyzer():
             if token["token"] == ',':
                 token = self.next_token()
                 if self._is_TYPE(token)| self._is_IDE(token):
+                    self.semanticalAnalyzer.actual_parameter_type = token["token"]
                     token = self.next_token()
                     if self._is_IDE(token):
+                        self.semanticalAnalyzer.actual_parameter_name = token["token"]
+                        self.semanticalAnalyzer.add_parameters()
                         self._mult_dec_parameters()
                     else:
                         self._error_message(expected=["<IDE>"],founded=token["token"], line=token["line"])
@@ -889,6 +949,8 @@ class SintaxicalAnalyzer():
             if token["token"] == ')':
                 token = self.next_token()
                 if token["token"] == '{':
+                    self.semanticalAnalyzer.add_scope(self.semanticalAnalyzer.actual_name)
+                    self.semanticalAnalyzer.add_local_declaration_method()
                     self._method_body()
                 else:
                     self._error_message(expected=["{"],founded=token["token"], line=token["line"])
@@ -954,9 +1016,11 @@ class SintaxicalAnalyzer():
         def _variable_param(self):
             token = self.next_token()
             if self._is_TYPE(token):
+                self.semanticalAnalyzer.actual_parameter_type = token["token"]
                 token = self.next_token()
                 if self._is_IDE(token):
-                    pass
+                    self.semanticalAnalyzer.actual_parameter_name = token["token"]
+                    self.semanticalAnalyzer.add_parameters()
                 else:
                     self._error_message(expected=['<IDE>'],founded=token["token"], line=token["line"])
             else:
@@ -965,9 +1029,11 @@ class SintaxicalAnalyzer():
         def _object_param(self):
             token = self.next_token()
             if self._is_IDE(token):
+                self.semanticalAnalyzer.actual_parameter_type = token["token"]
                 token = self.next_token()
                 if self._is_IDE(token):
-                    pass
+                    self.semanticalAnalyzer.actual_parameter_name = token["token"]
+                    self.semanticalAnalyzer.add_parameters()
                 else:
                     self._error_message(expected=['<IDE>'],founded=token["token"], line=token["line"])
             else:

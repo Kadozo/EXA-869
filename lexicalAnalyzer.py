@@ -4310,11 +4310,13 @@ class LexicalAnalyzer:
         self.__lexeme += verify
         if verify.isdecimal():
             self.q118()
-        elif verify == ' ' or verify == '\n':
+        elif verify == ' ' or verify == '\n' or ";":
             self.__lexeme = self.__lexeme[:-1]
             self.__tokens_table.append(str(self.__line_counter) + ": " + "<NRO, " + self.__lexeme + ">")
             if verify == '\n':
                 self.__line_counter += 1
+            if verify == ';':
+                self.__header = self.__header - 1
             self.q0()
         elif verify == ',':
             self.__lexeme = self.__lexeme[:-1]

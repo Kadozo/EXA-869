@@ -1,15 +1,43 @@
 const {
+    real sete = 4.1;
+    string oito = "asd";
 }
 variables {
+    int a;
+    int b[2];
 }
-class main{
+
+class c1 {
+    variables{int v1;}
+    objects{}
+    methods{
+        int m1(int v5, int v6, c1 c){
+            variables {
+                int v3;
+            }
+            objects {
+                c1 obj1;
+            }
+            return v1 + 1;
+        } 
+    }
+    constructor (int v, real j, c1 c) {
+        variables{}
+        objects{}
+    }
+}
+
+class main {
     variables {
+        int v2;
     }
     objects {
+        c1 obj1;
     }
     methods{ 
         int main(){
             variables {
+                int v4;
             }
             objects {
             }
