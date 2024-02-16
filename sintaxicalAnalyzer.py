@@ -12,7 +12,6 @@ class SintaxicalAnalyzer():
                 self.semanticalAnalyzer = SemanticalAnalyzer()
         
         def _save_output(self):
-            print(self.semanticalAnalyzer.global_scope_table)
             with open(self._inputdir+self._filename[:-4]+"-saída.txt", 'w') as file_writer:
                 for element in self._tokens_table:
                     file_writer.write(element)
@@ -24,7 +23,15 @@ class SintaxicalAnalyzer():
                             file_writer.write('\n')
                             file_writer.write(element)
                 else:
-                   file_writer.write("Analise Sintatica feita com sucesso!") 
+                   file_writer.write("Analise Sintatica feita com sucesso! \n")     
+                if(len(self.semanticalAnalyzer.errors_table)>0):
+                    file_writer.write('\n')
+                    file_writer.write('-----------------TABELA DE ERROS SEMANTICOS-----------------\n')
+                    for element in self.semanticalAnalyzer.errors_table:
+                        file_writer.write('\n')
+                        file_writer.write(element)
+                else:
+                    file_writer.write("Analise Semântica feita com sucesso!") 
                 file_writer.close()
 
         def _is_TYPE(self,token):
@@ -70,6 +77,7 @@ class SintaxicalAnalyzer():
                   actual_type_token =  actual_element[1].split(',',1)
                   token = {"line":actual_element[0],"type": actual_type_token[0][2:], "token":actual_type_token[1][1:-1]}
                   self._header += 1
+                  self.semanticalAnalyzer.actual_line = token["line"]
                   return token
             else:
                  self.is_EOF = True
@@ -80,6 +88,7 @@ class SintaxicalAnalyzer():
         def _dec_object_attribute_access(self):
             token = self.next_token()
             if self._is_IDE(token):
+                self.semanticalAnalyzer.actual_name = token["token"]
                 self._dimensions()
                 self._end_object_attribute_access()
             else:
@@ -123,18 +132,18 @@ class SintaxicalAnalyzer():
                                         self.semanticalAnalyzer.add_declaration_const()
                                         pass #sucesso
                                     else:
-                                        print("Incompatibilidade de tipo") #erro de incompatibilidade de tipo
+                                        self.semanticalAnalyzer.save_error("Incompatibilidade de tipo na linha " + self.semanticalAnalyzer.actual_line) #erro de incompatibilidade de tipo
                                 case "real":
                                     if '.' in token["token"]:
                                         self.semanticalAnalyzer.add_declaration_const()
                                         pass #sucesso
                                     else:
-                                        print("Incompatibilidade de tipo") #erro de incompatibilidade de tipo
+                                        self.semanticalAnalyzer.save_error("Incompatibilidade de tipo na linha " + self.semanticalAnalyzer.actual_line) #erro de incompatibilidade de tipo
                         elif token["type"] == "CAC":
                             if self.semanticalAnalyzer.actual_type == 'string':
                                 self.semanticalAnalyzer.add_declaration_const()
                             else:
-                                print("Incompatibilidade de tipo")
+                                self.semanticalAnalyzer.save_error("Incompatibilidade de tipo na linha " + self.semanticalAnalyzer.actual_line)
                     else:
                        self._error_message(expected=["<NRO>",'<CAC>','<BOOL>'],founded=token["token"], line=token["line"]) 
                 else:
@@ -181,11 +190,15 @@ class SintaxicalAnalyzer():
         def _dec_var(self):
             token = self.next_token()
             if self._is_IDE(token):
+                if self.semanticalAnalyzer.is_actual_object_atributte_acess:
+                    self.semanticalAnalyzer.actual_path_object_atributte_acess.append(self.semanticalAnalyzer.actual_name)
+                    if self.semanticalAnalyzer.is_assigment:
+                        self.semanticalAnalyzer.add_type_arithmetic_expression(token)
                 self.semanticalAnalyzer.actual_name = token["token"]
                 self._dimensions()
-                if not self.semanticalAnalyzer.is_actual_object:
+                if not self.semanticalAnalyzer.is_actual_object and not self.semanticalAnalyzer.is_actual_object_atributte_acess:
                     self.semanticalAnalyzer.add_local_declaration_variable()
-                else:
+                elif not self.semanticalAnalyzer.is_actual_object_atributte_acess and self.semanticalAnalyzer.is_actual_object:
                     self.semanticalAnalyzer.add_local_declaration_object()
             else:
                 self._error_message(expected=["IDE"],founded=token["token"], line=token["line"])
@@ -243,7 +256,7 @@ class SintaxicalAnalyzer():
             if token["token"] == "extends":
                 token = self.next_token()
                 if self._is_IDE(token):
-                    self.semanticalAnalyzer.add_declaration_class(extends=True)
+                    self.semanticalAnalyzer.add_declaration_class(extends=True, superclass_name=token["token"])
                     self._start_class_block()
                 else:
                     self._error_message(expected=["IDE"],founded=token["token"], line=token["line"])
@@ -426,7 +439,7 @@ class SintaxicalAnalyzer():
                     self.semanticalAnalyzer.verify_return_type()
                     token = self.next_token()
                     if token["token"] == '}':
-                        pass
+                        self.semanticalAnalyzer.remove_scope()
             else:
                 self._error_message(expected=['return'], founded=token['token'], line=token["line"])
         def _commands(self):
@@ -448,6 +461,17 @@ class SintaxicalAnalyzer():
             elif self._is_IDE(token):
                 self._object_access_or_assigment() 
                 token = self.next_token()
+                if self.semanticalAnalyzer.is_assigment:
+                    if len(self.semanticalAnalyzer.actual_type_arithmetic_expression) == 0:
+                        self.semanticalAnalyzer.verify_assigment()
+                    else:
+                        result,type_result = self.semanticalAnalyzer.verify_arithmetic_expression_type()
+                        if result:
+                            self.semanticalAnalyzer.actual_type_assigment.append(type_result)
+                            self.semanticalAnalyzer.verify_assigment()
+                        else:
+                            self.semanticalAnalyzer.save_error("Tipos incompatíveis na expressão aritmética na linha " + self.semanticalAnalyzer.actual_line)
+                            self.semanticalAnalyzer.is_assigment = False
                 if token["token"] == ';':
                     pass
                 else:
@@ -461,10 +485,12 @@ class SintaxicalAnalyzer():
             
         def _return(self):
             token = self.next_token()
+            self.semanticalAnalyzer.is_return = True
             if self._is_CAC(token=token) | self._is_NRO(token=token) | (token["token"] == '[') |self._is_IDE(token)| (token["token"] == '!') | (token["token"] == '(')|self._is_BOOL(token):
                 self._header -= 1
                 self._value()
             else:
+                self.semanticalAnalyzer.save_actual_return(void = True)
                 self._header -= 1
 
 #Bloco de atribuição       
@@ -478,6 +504,8 @@ class SintaxicalAnalyzer():
                 self._header -= 1 
                 self._object_method_access_end()
             elif token["token"] == '=':
+                self.semanticalAnalyzer.is_assigment = True
+                self.semanticalAnalyzer.save_actual_assigment()
                 self._value()
             elif token["token"] in ['++','--']:
                 pass
@@ -489,11 +517,14 @@ class SintaxicalAnalyzer():
             if token['token'] == '->':
                 self._ide_or_constructor()
                 token = self.next_token()
+                if self.semanticalAnalyzer.is_actual_method_acess:
+                    self.semanticalAnalyzer.verify_object_method_acess()
                 if token["token"] == '(':
                     self._parameters()
                     token = self.next_token()
                     if token["token"] == ')':
-                        pass
+                        if self.semanticalAnalyzer.is_actual_method_acess:
+                            self.semanticalAnalyzer.verify_parameters_method()
                     else:
                         self._error_message(expected=[')'], founded=token["token"], line=token["line"])
                 else:
@@ -532,17 +563,23 @@ class SintaxicalAnalyzer():
 
         def _value(self):
             token = self.next_token()
+
             if self._is_NRO(token):
                 self.semanticalAnalyzer.add_type_arithmetic_expression(token)
                 self._simple_or_double_arithimetic_expression_optional()
             elif self._is_CAC(token):
-                pass
+                if self.semanticalAnalyzer.is_assigment:
+                    self.semanticalAnalyzer.save_actual_assigment(is_string=True)
             elif token["token"] == '[':
                 self._header -= 1
                 self._vector_assign_block()
             elif self._is_IDE(token):
                 self._header -= 1
                 self._init_expression()
+                if self.semanticalAnalyzer.is_assigment:
+                    self.semanticalAnalyzer.save_actual_assigment()
+                elif self.semanticalAnalyzer.is_return:
+                    self.semanticalAnalyzer.save_actual_return()
             elif token["token"] == "!":
                 self._logical_expression_begin()
                 self._logical_expression_end() 
@@ -772,10 +809,19 @@ class SintaxicalAnalyzer():
         def _end_object_attribute_access(self):
             token = self.next_token()
             if token['token'] == '.':
+                self.semanticalAnalyzer.is_actual_object_atributte_acess = True
                 self._multiple_object_attribute_access()
             else:
                 self._header -= 1
-        
+                if self.semanticalAnalyzer.is_actual_object_atributte_acess == True:
+                    self.semanticalAnalyzer.actual_path_object_atributte_acess.append(self.semanticalAnalyzer.actual_name)
+                    self.semanticalAnalyzer.verify_object_atributte_acess()
+                    self.semanticalAnalyzer.actual_path_object_atributte_acess = []
+                elif self.semanticalAnalyzer.is_actual_method_acess:
+                    self.semanticalAnalyzer.actual_parameter_method_acess_parameters.append(self.semanticalAnalyzer.actual_name)
+                elif self.semanticalAnalyzer.is_arithmetic_expression:
+                    self.semanticalAnalyzer.add_type_arithmetic_expression(token)
+                
         def _object_method_or_object_access(self):
             self._object_method_or_object_access_or_part()
         
@@ -790,9 +836,13 @@ class SintaxicalAnalyzer():
         def _ide_or_constructor(self):
             token = self.next_token()
             if token["token"] == 'constructor':
-                pass
+                self.semanticalAnalyzer.is_actual_method_acess = True
+                self.semanticalAnalyzer.actual_path_method_acess.append(self.semanticalAnalyzer.actual_name)
+                self.semanticalAnalyzer.actual_path_method_acess.append(token["token"])
             elif self._is_IDE(token):
-                pass
+                self.semanticalAnalyzer.is_actual_method_acess = True
+                self.semanticalAnalyzer.actual_path_method_acess.append(self.semanticalAnalyzer.actual_name)
+                self.semanticalAnalyzer.actual_path_method_acess.append(token["token"])
             else:
                 self._error_message(expected=['constructor','<IDE>'], founded=token["token"],line=token["line"])
 
@@ -860,6 +910,7 @@ class SintaxicalAnalyzer():
                 self.semanticalAnalyzer.add_type_arithmetic_expression(token)
             elif self._is_IDE(token):
                 self._header -= 1
+                self.semanticalAnalyzer.is_arithmetic_expression = True
                 self._object_method_or_object_access_or_part()
             else:
                 self._error_message(expected=['<NRO>','<IDE>'], founded=token["token"],line=token["line"])
@@ -873,7 +924,6 @@ class SintaxicalAnalyzer():
                     self._methods()
                     token = self.next_token()
                     if token["token"] == '}':
-                        self.semanticalAnalyzer.remove_scope()
                         pass
                     else:
                         self._error_message(expected=["}"],founded=token["token"], line=token["line"])
